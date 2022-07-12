@@ -61,7 +61,7 @@ class _AppWidgetState extends State<AppWidget> {
       }
 
       return ScopedBuilder<ThemeStore, Exception, bool>(
-          store: Modular.get<ThemeStore>(),
+          store: themeStore,
           onState: (context, isDarkTheme) {
             return MaterialApp.router(
               debugShowCheckedModeBanner: false,

@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fuel Manager'),
+        title: const Text('Abasteci Aqui'),
         actions: [
           IconButton(
             icon: const Icon(Ionicons.refresh_circle_outline),
@@ -66,6 +66,12 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: listFuel.length,
               itemBuilder: (context, index) => ListTile(
+                subtitle: Text(listFuel[index].address != null
+                    ? listFuel[index].address!
+                    : ""),
+                tileColor: (index == 0)
+                    ? Theme.of(context).colorScheme.surfaceVariant
+                    : null,
                 title: Text(
                   DateFormat('dd/MM/yyyy HH:mm', 'pt_BR')
                       .format(listFuel[index].date),
@@ -73,10 +79,8 @@ class _HomePageState extends State<HomePage> {
                 onTap: () async {
                   await Modular.to
                       .pushNamed("/addFuel", arguments: listFuel[index]);
+                  store.getList();
                 },
-                trailing: IconButton(
-                    onPressed: () => store.delete(listFuel[index]),
-                    icon: const Icon(Ionicons.trash_bin_outline)),
               ),
             ),
           );

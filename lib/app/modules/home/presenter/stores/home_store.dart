@@ -9,16 +9,8 @@ class HomeStore extends NotifierStore<FuelException, List<FuelEntity>> {
 
   Future<void> getList() async {
     setLoading(true);
-
     final results = await usecase();
-
     results.fold(setError, update);
-
     setLoading(false);
-  }
-
-  Future<void> delete(FuelEntity model) async {
-    await usecase.delete(model);
-    getList();
   }
 }

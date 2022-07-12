@@ -10,13 +10,12 @@ class ThemeStore extends NotifierStore<Exception, bool> {
 
   Future<void> getTheme() async {
     bool isDark = state;
-
     isDark = await themeChange.getThemeMode();
-
     update(isDark);
   }
 
   Future<void> changeTheme() async {
     await themeChange.update();
+    await getTheme();
   }
 }

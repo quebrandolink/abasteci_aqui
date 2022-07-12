@@ -1,27 +1,31 @@
 // ignore_for_file: must_be_immutable, prefer_final_fields
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:fuel_manager/app/modules/home/domain/entities/fuel_entity.dart';
 import 'package:fuel_manager/app/shared/exceptions/fuel_exception.dart';
+import 'package:geocoder2/geocoder2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../domain/usecases/fuel_usecase.dart';
 
 class FuelStore extends NotifierStore<FuelException, FuelEntity> {
-  FuelStore(this.usecase)
-      : super(FuelEntity(latitude: -23.4906411, longitude: -51.1377816));
+  FuelStore(this.usecase) : super(FuelEntity(latitude: 0, longitude: 0));
   final FuelUsecase usecase;
   late GoogleMapController _mapController;
 
   get mapController => _mapController;
 
-  FuelEntity _fuelEntity =
-      FuelEntity(latitude: -23.2906411, longitude: -51.1377816);
+  FuelEntity _fuelEntity = FuelEntity(latitude: 0, longitude: 0);
 
-  Future<void> insert({FuelEntity? model}) async {
-    await usecase.insert(_fuelEntity);
+  Future<void> insert(model) async {
+    await usecase.insert(model);
+  }
+
+  Future<void> delete(FuelEntity model) async {
+    await usecase.delete(model);
   }
 
   void onMapCreated(GoogleMapController gmc) async {
@@ -40,13 +44,17 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
     try {
       _fuelEntity = state;
       Position position = await _currentPosition();
+      final address = await getAddress(position.latitude, position.longitude);
+      _fuelEntity = FuelEntity(
+        address: address.address,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        date: DateTime.now(),
+      );
 
       if (kDebugMode) {
-        print("${position.latitude}, ${position.longitude}");
+        print(_fuelEntity.toString());
       }
-      _fuelEntity.date = DateTime.now();
-      _fuelEntity.latitude = position.latitude;
-      _fuelEntity.longitude = position.longitude;
 
       update(_fuelEntity);
     } on FuelException catch (e) {
@@ -57,6 +65,15 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
       setLoading(false);
     }
     setLoading(false);
+  }
+
+  Future<GeoData> getAddress(double latitude, double longitude) async {
+    GeoData data = await Geocoder2.getDataFromCoordinates(
+        latitude: latitude,
+        longitude: longitude,
+        googleMapApiKey: FlutterConfig.get('ANDROID_MAPS_APIKEY'));
+
+    return data;
   }
 
   Future<Position> _currentPosition() async {

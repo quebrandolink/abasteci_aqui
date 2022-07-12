@@ -20,5 +20,7 @@ class FuelEntity {
   }) : date = date ?? DateTime.now();
 
   @override
-  toString() => 'FuelEntity{id: $id, date: $date}';
+  String toString() {
+    return 'FuelEntity(id: $id, date: $date, latitude: $latitude, longitude: $longitude, address: $address)';
+  }
 }
