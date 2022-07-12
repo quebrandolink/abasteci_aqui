@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1007362438499",
+    "project_id": "fuel-manager-full",
+    "storage_bucket": "fuel-manager-full.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007362438499:android:56cc1c02e0005ad442cf56",
+        "android_client_info": {
+          "package_name": "br.com.fuel_manager.fuel_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1007362438499-2m0uvmencq1t7i51cjjdccmjel00njqj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjReKkMIBRCmIUUh1srI1eE8yb4eXl3bg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007362438499-2m0uvmencq1t7i51cjjdccmjel00njqj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
