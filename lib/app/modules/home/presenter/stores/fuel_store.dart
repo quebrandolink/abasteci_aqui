@@ -68,10 +68,9 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
   }
 
   Future<GeoData> getAddress(double latitude, double longitude) async {
+    String mapsApiKey = const String.fromEnvironment("ANDROID_MAPS_APIKEY");
     GeoData data = await Geocoder2.getDataFromCoordinates(
-        latitude: latitude,
-        longitude: longitude,
-        googleMapApiKey: FlutterConfig.get('ANDROID_MAPS_APIKEY'));
+        latitude: latitude, longitude: longitude, googleMapApiKey: mapsApiKey);
 
     return data;
   }
