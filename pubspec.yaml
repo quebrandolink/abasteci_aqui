@@ -16,24 +16,23 @@ dependencies:
   flutter_modular: ^5.0.3
   flutter_triple: ^1.2.7+2
   firebase_core: ^1.19.1
-  objectbox: ^1.6.0
-  objectbox_flutter_libs: ^1.6.0
+  firebase_auth: ^3.4.2
+  cloud_firestore: ^3.3.0
+  google_sign_in: ^5.4.0
+  google_fonts: ^3.0.1
+  shared_preferences: ^2.0.15
   dartz: ^0.10.1
   location: ^4.4.0
   google_maps_flutter: ^2.1.8
   intl: ^0.17.0
   geocoder2: ^1.1.2
   geolocator: ^9.0.0
-  flutter_config: ^2.0.0
   ionicons: ^0.1.2
   dynamic_color: ^1.4.0
-  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.1.11
-  objectbox_generator: ^1.6.0
   flutter_lints: ^2.0.0
   triple_test: ^1.0.0
   modular_test: ^2.0.0
@@ -47,6 +46,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/json/
 
 flutter_icons:
   android: true

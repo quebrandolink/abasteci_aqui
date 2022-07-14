@@ -20,14 +20,26 @@ class _LocationPageState extends State<LocationPage> {
 
   @override
   void initState() {
-    store.getPosition();
+    store.getPosition(widget.entity);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text(
+          widget.entity != null
+              ? "Visualizar abastecimento.".toUpperCase()
+              : "Cadastrar abastecimento".toUpperCase(),
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        elevation: 0,
+        // iconTheme: const IconThemeData(color: Colors.black),
+      ),
       body: SafeArea(
         child: widget.entity != null
             ? BuildMapWidget(

@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:fuel_manager/app/shared/helpers/theme/values/values.dart';
 import 'package:fuel_manager/app/shared/theme/theme_store.dart';
 
 // Fictitious brand color.
-const _brandBlue = Color.fromARGB(255, 229, 176, 30);
+const _primaryColor = AppColors.primaryColor;
 
-CustomColors lightCustomColors = const CustomColors(danger: Color(0xFFE53935));
-CustomColors darkCustomColors = const CustomColors(danger: Color(0xFFEF9A9A));
+CustomColors lightCustomColors =
+    const CustomColors(danger: AppColors.dangerColor);
+CustomColors darkCustomColors =
+    const CustomColors(danger: AppColors.dangerColor);
 
 class AppWidget extends StatefulWidget {
   const AppWidget({Key? key}) : super(key: key);
@@ -41,21 +44,21 @@ class _AppWidgetState extends State<AppWidget> {
         lightColorScheme = lightDynamic.harmonized();
         // (Optional) Customize the scheme as desired. For example, one might
         // want to use a brand color to override the dynamic [ColorScheme.secondary].
-        lightColorScheme = lightColorScheme.copyWith(secondary: _brandBlue);
+        lightColorScheme = lightColorScheme.copyWith(secondary: _primaryColor);
         // (Optional) If applicable, harmonize custom colors.
         lightCustomColors = lightCustomColors.harmonized(lightColorScheme);
 
         // Repeat for the dark color scheme.
         darkColorScheme = darkDynamic.harmonized();
-        darkColorScheme = darkColorScheme.copyWith(secondary: _brandBlue);
+        darkColorScheme = darkColorScheme.copyWith(secondary: _primaryColor);
         darkCustomColors = darkCustomColors.harmonized(darkColorScheme);
       } else {
         // Otherwise, use fallback schemes.
         lightColorScheme = ColorScheme.fromSeed(
-          seedColor: _brandBlue,
+          seedColor: _primaryColor,
         );
         darkColorScheme = ColorScheme.fromSeed(
-          seedColor: _brandBlue,
+          seedColor: _primaryColor,
           brightness: Brightness.dark,
         );
       }

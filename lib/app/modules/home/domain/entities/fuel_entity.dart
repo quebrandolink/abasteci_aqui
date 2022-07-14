@@ -1,26 +1,26 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:objectbox/objectbox.dart';
-
-@Entity()
 class FuelEntity {
-  int id = 0;
+  String uid;
 
-  @Property(type: PropertyType.date)
   DateTime date;
 
   double? latitude;
   double? longitude;
   String? address;
+  int? km;
+  String? userId;
 
   FuelEntity({
-    this.latitude,
-    this.longitude,
+    this.uid = "",
+    this.latitude = 0,
+    this.longitude = 0,
     this.address,
+    this.km,
+    this.userId,
     DateTime? date,
   }) : date = date ?? DateTime.now();
 
   @override
   String toString() {
-    return 'FuelEntity(id: $id, date: $date, latitude: $latitude, longitude: $longitude, address: $address)';
+    return 'uid: $uid, date: $date, latitude: $latitude, longitude: $longitude, address: $address, km: $km, userId: $userId';
   }
 }

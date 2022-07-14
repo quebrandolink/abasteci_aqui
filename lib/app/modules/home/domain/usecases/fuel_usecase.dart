@@ -23,11 +23,19 @@ class FuelUsecaseImpl implements FuelUsecase {
 
   @override
   Future<Either<FuelException, bool>> insert(FuelEntity model) async {
+    if (model.latitude == 0 || model.longitude == 0) {
+      return Left(FuelException(
+          "Não foi possível obter a localização do abastecimento."));
+    }
     return await repository.insert(model);
   }
 
   @override
   Future<Either<FuelException, bool>> delete(FuelEntity model) async {
+    if (model.uid.isEmpty) {
+      return Left(FuelException(
+          "Não foi possível obter os dados do abastecimento para exclusão. Tente novamente."));
+    }
     return await repository.delete(model);
   }
 }
