@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:fuel_manager/app/modules/home/domain/entities/fuel_entity.dart';
+import '../entities/fuel_entity.dart';
 
 import '../../../../shared/exceptions/fuel_exception.dart';
 

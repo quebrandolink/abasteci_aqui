@@ -1,26 +1,33 @@
-import 'package:fuel_manager/app/modules/home/domain/entities/fuel_entity.dart';
+import '../../domain/entities/fuel_entity.dart';
 
 class FuelEntityAdapter {
   static FuelEntity fromJson(dynamic json) {
     return FuelEntity(
       uid: json["uid"]! as String,
       userId: json["userId"]! as String,
-      address: json["address"]! as String,
       date: json["date"]!.toDate(),
-      km: json["km"]! as int,
-      latitude: json["latitude"]! as double,
-      longitude: json["longitude"]! as double,
+      address: json["address"] != null ? json["address"]! as String : "",
+      latitude: json["latitude"] != null ? json["latitude"]! as double : 0,
+      longitude: json["longitude"] != null ? json["longitude"]! as double : 0,
+      km: json["km"] != null ? json["km"]! as int : 0,
+      vehicle: json["vehicle"] != null ? json["vehicle"]! as String : "",
+      liter: json["liter"] != null ? json["liter"]! as double : 0.0,
+      valueLiter:
+          json["valueLiter"] != null ? json["valueLiter"]! as double : 0.0,
     );
   }
 
   static Map<String, dynamic> toJson(FuelEntity entity) {
     return <String, dynamic>{
       "userId": entity.userId,
-      "address": entity.address,
       "date": entity.date,
-      "km": entity.km,
+      "address": entity.address,
       "latitude": entity.latitude,
       "longitude": entity.longitude,
+      "km": entity.km,
+      "vehicle": entity.vehicle,
+      "liter": entity.liter,
+      "valueLiter": entity.valueLiter,
     };
   }
 }

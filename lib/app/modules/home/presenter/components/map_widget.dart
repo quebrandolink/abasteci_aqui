@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:fuel_manager/app/modules/splash/components/splash_widget_lottie.dart';
+import 'package:fuel_manager/app/shared/helpers/theme/values/values.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../domain/entities/fuel_entity.dart';
@@ -21,7 +23,8 @@ class _BuildMapWidgetState extends State<BuildMapWidget> {
   final store = Modular.get<FuelStore>();
   Set<Marker> markers = <Marker>{};
 
-  setFuelMarker(model) async {
+  setMarker(model) async {
+    markers = {};
     markers.add(
       Marker(
         markerId: MarkerId(widget.model.date.toString()),
@@ -33,15 +36,18 @@ class _BuildMapWidgetState extends State<BuildMapWidget> {
   @override
   void initState() {
     super.initState();
-    setFuelMarker(widget.model);
+    if (!widget.newFuel) {
+      setMarker(widget.model);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
+      physics: const BouncingScrollPhysics(),
       children: [
-        Flexible(
-          flex: 2,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 250),
           child: GoogleMap(
             scrollGesturesEnabled: false,
             initialCameraPosition: CameraPosition(
@@ -57,11 +63,9 @@ class _BuildMapWidgetState extends State<BuildMapWidget> {
           ),
         ),
         widget.model.latitude == 0
-            ? const Flexible(
-                flex: 1,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+            ? const SplashWidgetLottie(
+                isNetwork: true,
+                lottieFile: Constants.kfuelLottieAnimation,
               )
             : widget.newFuel
                 ? NewFuel(model: widget.model)

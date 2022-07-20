@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fuel_manager/app/shared/helpers/theme/values/values.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'theme/values/values.dart';
 
 class BannerMenager {
   void _show({
@@ -44,37 +45,37 @@ class BannerMenager {
     ScaffoldMessenger.of(context).showMaterialBanner(banner);
   }
 
-  showError(BuildContext context, String message,
+  showError(GlobalKey scaffoldKey, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: context,
+          context: scaffoldKey.currentContext!,
           message: message,
           icon: icon ?? Icons.dangerous_outlined,
           backgroundColor: AppColors.dangerColor,
           actions: actions);
 
-  showWarning(BuildContext context, String message,
+  showWarning(GlobalKey scaffoldKey, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: context,
+          context: scaffoldKey.currentContext!,
           message: message,
           icon: icon ?? Icons.warning_amber_rounded,
           backgroundColor: AppColors.warningColor,
           actions: actions);
 
-  showInfo(BuildContext context, String message,
+  showInfo(GlobalKey scaffoldKey, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: context,
+          context: scaffoldKey.currentContext!,
           message: message,
           icon: icon ?? Icons.info_outlined,
           backgroundColor: AppColors.infoColor,
           actions: actions);
 
-  showSuccess(BuildContext context, String message,
+  showSuccess(GlobalKey scaffoldKey, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: context,
+          context: scaffoldKey.currentContext!,
           message: message,
           icon: icon ?? Icons.task_alt_rounded,
           backgroundColor: AppColors.successColor,

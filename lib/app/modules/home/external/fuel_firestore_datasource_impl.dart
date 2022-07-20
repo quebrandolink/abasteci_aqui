@@ -1,8 +1,14 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fuel_manager/app/modules/home/domain/entities/fuel_entity.dart';
-import 'package:fuel_manager/app/modules/home/infra/adapters/fuel_entity_adapter.dart';
-import 'package:fuel_manager/app/modules/home/infra/datasources/fuel_datasource.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:fuel_manager/app/modules/auth/presenters/stores/auth_store.dart';
+import 'package:fuel_manager/app/shared/exceptions/fuel_exception.dart';
+
+import '../domain/entities/fuel_entity.dart';
+import '../infra/adapters/fuel_entity_adapter.dart';
+import '../infra/datasources/fuel_datasource.dart';
 
 class FuelFirestoreDatasourceImpl implements FuelDatasource {
   final FirebaseFirestore firestore;
@@ -11,14 +17,22 @@ class FuelFirestoreDatasourceImpl implements FuelDatasource {
 
   @override
   Future<List<FuelEntity>> getFuelList() async {
-    final ref = firestore.collection("fuel");
+    final _authAtore = Modular.get<AuthStore>();
+    if (_authAtore.user == null) {
+      throw FuelException(
+          "Usuário não localizado, por favor, faça o login novamente.");
+    }
+    final ref = firestore
+        .collection("fuel")
+        .where("userId", isEqualTo: _authAtore.user!.email)
+        .orderBy("date", descending: true);
 
     final querySnapshot = await ref
-        .orderBy("date", descending: true)
         .get()
         .then((querySnapshot) => querySnapshot.docs.map((doc) {
               return FuelEntityAdapter.fromJson({"uid": doc.id, ...doc.data()});
-            }).toList());
+            }).toList())
+        .catchError((e) => throw e);
 
     return querySnapshot;
   }

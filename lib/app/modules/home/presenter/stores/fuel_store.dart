@@ -13,18 +13,23 @@ import 'package:geocoder2/geocoder2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../auth/presenters/stores/auth_store.dart';
 import '../../domain/usecases/fuel_usecase.dart';
 
 class FuelStore extends NotifierStore<FuelException, FuelEntity> {
+  final _authStore = Modular.get<AuthStore>();
   FuelStore(this.usecase) : super(FuelEntity(latitude: 0, longitude: 0));
   final FuelUsecase usecase;
-  late GoogleMapController _mapController;
+  late GoogleMapController mapController;
   TextEditingController kmController = TextEditingController();
-  Set<Marker> markers = <Marker>{};
+  TextEditingController vehicleController = TextEditingController();
+  TextEditingController literController = TextEditingController();
+  TextEditingController valueLiterController = TextEditingController();
 
-  get mapController => _mapController;
-
-  FuelEntity _fuelEntity = FuelEntity(latitude: 0, longitude: 0);
+  FuelEntity _fuelEntity = FuelEntity(
+    latitude: 0,
+    longitude: 0,
+  );
 
   Future<void> insert(FuelEntity model, BuildContext context) async {
     if (kmController.text.trim().isEmpty) {
@@ -32,25 +37,41 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
           duration: const Duration(seconds: 5));
       return;
     } else {
-      model.km = int.parse(kmController.text);
+      model.km = kmController.text.isNotEmpty
+          ? int.parse(kmController.text.replaceAll(".", "").replaceAll(",", ""))
+          : 0;
     }
+    model.vehicle = vehicleController.text;
+    model.liter = literController.text.isNotEmpty
+        ? double.parse(literController.text.replaceAll(",", "."))
+        : 0.0;
+    model.valueLiter = valueLiterController.text.isNotEmpty
+        ? double.parse(valueLiterController.text.replaceAll(",", "."))
+        : 0.0;
 
-    model.userId = "12312312343543";
+    if (_authStore.user == null) {
+      SnackbarMenager().showError(
+          context, "Erro ao obter os dados do usuário, faça login novamente.",
+          duration: const Duration(seconds: 5));
+      return;
+    } else {
+      model.userId = _authStore.user!.email;
+    }
     final result = await usecase.insert(model);
 
     result.fold((error) {
       SnackbarMenager().showError(context, error.message,
-          duration: const Duration(seconds: 5));
+          duration: const Duration(seconds: 3));
     }, (isSaved) {
       if (isSaved) {
         SnackbarMenager().showSuccess(
             context, "Abastecimento salvo com sucesso.",
-            duration: const Duration(seconds: 5));
-        Modular.to.pop();
+            duration: const Duration(seconds: 3));
+        Modular.to.pop(model);
       } else {
         SnackbarMenager().showError(
             context, "Não foi possível salvar, Tente novamente.",
-            duration: const Duration(seconds: 5));
+            duration: const Duration(seconds: 3));
       }
     });
   }
@@ -67,7 +88,7 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
         SnackbarMenager().showSuccess(
             context, "Abastecimento excluido com sucesso.",
             duration: const Duration(seconds: 5));
-        Modular.to.pop();
+        Modular.to.pop(true);
       } else {
         SnackbarMenager().showError(
             context, "Não foi possível excluir, Tente novamente.",
@@ -77,35 +98,22 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
     setLoading(false);
   }
 
-  setMarker() async {
-    print("set marker: ${_fuelEntity.toString()}");
-    markers.add(
-      Marker(
-        markerId: MarkerId("${_fuelEntity.address}"),
-        position: LatLng(_fuelEntity.latitude!, _fuelEntity.longitude!),
-        // icon: await BitmapDescriptor.fromAssetImage(
-        //   const ImageConfiguration(),
-        //   'assets/images/fuel-marker.png',
-        // ),
-      ),
-    );
-  }
-
   void onMapCreated(
       GoogleMapController gmc, Brightness brightness, FuelEntity? model) async {
-    _mapController = gmc;
+    mapController = gmc;
     if (brightness == Brightness.dark) {
-      getJsonFile("assets/json/night.json").then(_mapController.setMapStyle);
+      await _getJsonFile("assets/json/night.json")
+          .then(mapController.setMapStyle);
     }
     getPosition(model);
-    setMarker();
   }
 
-  Future<String> getJsonFile(String path) async {
+  Future<String> _getJsonFile(String path) async {
     return await rootBundle.loadString(path);
   }
 
   Future<void> getPosition(FuelEntity? model) async {
+    setLoading(false);
     try {
       late LatLng latLng;
       _fuelEntity = state;
@@ -118,7 +126,7 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
         }
         if (model.address == null || model.address!.isEmpty) {
           final address = await getAddress(model.latitude!, model.longitude!);
-          model.address = address.address;
+          model.address = address;
         }
         latLng = LatLng(model.latitude!, model.longitude!);
         _fuelEntity = model;
@@ -127,12 +135,12 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
         latLng = LatLng(position.latitude, position.longitude);
         final address = await getAddress(latLng.latitude, latLng.longitude);
         _fuelEntity = FuelEntity(
-          address: address.address,
+          address: address,
           latitude: latLng.latitude,
           longitude: latLng.longitude,
           date: DateTime.now(),
         );
-        _mapController.animateCamera(
+        mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(target: latLng, zoom: 17.0),
           ),
@@ -146,18 +154,21 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
       update(_fuelEntity);
     } on FuelException catch (e) {
       setError(e);
-    } catch (e) {
-      setError(FuelException(e.toString()));
     }
-    setLoading(false);
   }
 
-  Future<GeoData> getAddress(double latitude, double longitude) async {
+  Future<String> getAddress(double latitude, double longitude) async {
+    if (latitude == 0.0 || longitude == 0.0) {
+      return "";
+    }
     String mapsApiKey = const String.fromEnvironment("ANDROID_MAPS_APIKEY");
     GeoData data = await Geocoder2.getDataFromCoordinates(
-        latitude: latitude, longitude: longitude, googleMapApiKey: mapsApiKey);
+            latitude: latitude,
+            longitude: longitude,
+            googleMapApiKey: mapsApiKey)
+        .catchError((e) => throw FuelException("Erro ao buscar endereço."));
 
-    return data;
+    return data.address;
   }
 
   Future<Position> _currentPosition() async {

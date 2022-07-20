@@ -32,7 +32,11 @@ class SnackbarMenager {
             onPressed: () {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
             },
-            icon: const Icon(Icons.close),
+            tooltip: "Fechar",
+            icon: const Icon(
+              Icons.close,
+              color: Colors.white60,
+            ),
           ),
         ],
       ),

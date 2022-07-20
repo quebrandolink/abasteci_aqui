@@ -1,16 +1,27 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:fuel_manager/app/modules/home/domain/entities/fuel_entity.dart';
-import 'package:fuel_manager/app/modules/home/domain/usecases/fuel_usecase.dart';
-import 'package:fuel_manager/app/shared/exceptions/fuel_exception.dart';
+import '../../domain/entities/fuel_entity.dart';
+import '../../domain/usecases/fuel_usecase.dart';
+import '../../../../shared/exceptions/fuel_exception.dart';
 
 class HomeStore extends NotifierStore<FuelException, List<FuelEntity>> {
   final FuelUsecase usecase;
   HomeStore(this.usecase) : super([]);
 
+  List<FuelEntity> listFuel = [];
+
+  String? get lastVehicle => listFuel.first.vehicle;
+
   Future<void> getList() async {
     setLoading(true);
     final results = await usecase();
-    results.fold(setError, update);
+    results.fold((error) {
+      setError(error);
+    }, (results) {
+      listFuel = results;
+      update(listFuel);
+    });
     setLoading(false);
   }
 }

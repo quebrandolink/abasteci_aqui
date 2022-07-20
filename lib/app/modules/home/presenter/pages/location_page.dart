@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:fuel_manager/app/shared/helpers/theme/values/values.dart';
+import '../../../splash/components/splash_widget_lottie.dart';
 
 import '../../../../shared/exceptions/fuel_exception.dart';
 import '../../domain/entities/fuel_entity.dart';
@@ -8,8 +10,10 @@ import '../components/map_widget.dart';
 import '../stores/fuel_store.dart';
 
 class LocationPage extends StatefulWidget {
-  const LocationPage({this.entity, Key? key}) : super(key: key);
+  const LocationPage({this.entity, Key? key, this.lastVehicle})
+      : super(key: key);
   final FuelEntity? entity;
+  final String? lastVehicle;
 
   @override
   State<LocationPage> createState() => _LocationPageState();
@@ -20,8 +24,22 @@ class _LocationPageState extends State<LocationPage> {
 
   @override
   void initState() {
-    store.getPosition(widget.entity);
     super.initState();
+    store.getPosition(widget.entity);
+    if (widget.lastVehicle != null && widget.lastVehicle != "null") {
+      store.vehicleController.text = widget.lastVehicle!;
+    } else {
+      store.vehicleController.clear();
+    }
+    store.kmController.clear();
+    store.literController.clear();
+    store.valueLiterController.clear();
+  }
+
+  @override
+  void dispose() {
+    store.mapController.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,7 +56,6 @@ class _LocationPageState extends State<LocationPage> {
               .copyWith(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
-        // iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SafeArea(
         child: widget.entity != null
@@ -57,9 +74,10 @@ class _LocationPageState extends State<LocationPage> {
                 onError: (context, error) => Center(
                   child: Text(error!.message),
                 ),
-                onLoading: (context) => const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                onLoading: (context) => const SplashWidgetLottie(
+                    isNetwork: true,
+                    lottieFile: Constants.kfuelLottieAnimation,
+                    size: 50),
               ),
       ),
     );

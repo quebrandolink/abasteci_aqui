@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1007362438499-69gquirm7sm7j08lmu8f3qrsvn65k2mm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.fuel_manager.fuel_manager",
+            "certificate_hash": "3761c8ecf3833336f906355cf649ce0ba991a41f"
+          }
+        },
+        {
+          "client_id": "1007362438499-8g0rt2datp7ge2alhbei9dohhp95uok0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.fuel_manager.fuel_manager",
+            "certificate_hash": "0481e67dca82171e541b573a912383e9b9dbc6ca"
+          }
+        },
+        {
           "client_id": "1007362438499-2m0uvmencq1t7i51cjjdccmjel00njqj.apps.googleusercontent.com",
           "client_type": 3
         }
