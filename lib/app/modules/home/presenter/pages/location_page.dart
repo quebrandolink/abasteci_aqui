@@ -20,25 +20,25 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  final store = Modular.get<FuelStore>();
+  final fuelStore = Modular.get<FuelStore>();
 
   @override
   void initState() {
     super.initState();
-    store.getPosition(widget.entity);
+    fuelStore.getPosition(widget.entity);
     if (widget.lastVehicle != null && widget.lastVehicle != "null") {
-      store.vehicleController.text = widget.lastVehicle!;
+      fuelStore.vehicleController.text = widget.lastVehicle!;
     } else {
-      store.vehicleController.clear();
+      fuelStore.vehicleController.clear();
     }
-    store.kmController.clear();
-    store.literController.clear();
-    store.valueLiterController.clear();
+    fuelStore.kmController.clear();
+    fuelStore.literController.clear();
+    fuelStore.valueLiterController.clear();
   }
 
   @override
   void dispose() {
-    store.mapController.dispose();
+    fuelStore.mapController.dispose();
     super.dispose();
   }
 
@@ -64,20 +64,32 @@ class _LocationPageState extends State<LocationPage> {
                 newFuel: false,
               )
             : ScopedBuilder<FuelStore, FuelException, FuelEntity>(
-                store: store,
+                store: fuelStore,
                 onState: (context, model) {
                   return BuildMapWidget(
                     model: model,
                     newFuel: true,
                   );
                 },
-                onError: (context, error) => Center(
-                  child: Text(error!.message),
+                onError: (context, error) => Column(
+                  children: [
+                    const SizedBox(height: 100),
+                    SplashWidgetLottie(
+                        isNetwork: true,
+                        lottieFile: Constants.kErrorLottieAnimation,
+                        message: error!.message,
+                        size: 100),
+                  ],
                 ),
-                onLoading: (context) => const SplashWidgetLottie(
-                    isNetwork: true,
-                    lottieFile: Constants.kfuelLottieAnimation,
-                    size: 50),
+                onLoading: (context) => Column(
+                  children: const [
+                    SizedBox(height: 150),
+                    SplashWidgetLottie(
+                        isNetwork: true,
+                        lottieFile: Constants.kfuelLottieAnimation,
+                        size: 100),
+                  ],
+                ),
               ),
       ),
     );

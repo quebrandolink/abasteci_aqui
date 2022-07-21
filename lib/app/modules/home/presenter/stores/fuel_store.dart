@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable, prefer_final_fields
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +24,7 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
   TextEditingController vehicleController = TextEditingController();
   TextEditingController literController = TextEditingController();
   TextEditingController valueLiterController = TextEditingController();
+  GlobalKey<ScaffoldState> scaffoldKeyFuelStore = GlobalKey<ScaffoldState>();
 
   FuelEntity _fuelEntity = FuelEntity(
     latitude: 0,
@@ -37,11 +37,16 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
           duration: const Duration(seconds: 5));
       return;
     } else {
-      model.km = kmController.text.isNotEmpty
-          ? int.parse(kmController.text.replaceAll(".", "").replaceAll(",", ""))
-          : 0;
+      model.km =
+          int.parse(kmController.text.replaceAll(".", "").replaceAll(",", ""));
     }
-    model.vehicle = vehicleController.text;
+    if (vehicleController.text.trim().isEmpty) {
+      SnackbarMenager().showError(context, "Insira a placa do veículo.",
+          duration: const Duration(seconds: 5));
+      return;
+    } else {
+      model.vehicle = vehicleController.text;
+    }
     model.liter = literController.text.isNotEmpty
         ? double.parse(literController.text.replaceAll(",", "."))
         : 0.0;
@@ -64,8 +69,8 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
           duration: const Duration(seconds: 3));
     }, (isSaved) {
       if (isSaved) {
-        SnackbarMenager().showSuccess(
-            context, "Abastecimento salvo com sucesso.",
+        SnackbarMenager().showSuccess(scaffoldKeyFuelStore.currentContext!,
+            "Abastecimento salvo com sucesso.",
             duration: const Duration(seconds: 3));
         Modular.to.pop(model);
       } else {
@@ -85,8 +90,8 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
           duration: const Duration(seconds: 5));
     }, (isSaved) {
       if (isSaved) {
-        SnackbarMenager().showSuccess(
-            context, "Abastecimento excluido com sucesso.",
+        SnackbarMenager().showSuccess(scaffoldKeyFuelStore.currentContext!,
+            "Abastecimento excluido com sucesso.",
             duration: const Duration(seconds: 5));
         Modular.to.pop(true);
       } else {

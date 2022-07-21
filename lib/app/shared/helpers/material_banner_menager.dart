@@ -45,37 +45,37 @@ class BannerMenager {
     ScaffoldMessenger.of(context).showMaterialBanner(banner);
   }
 
-  showError(GlobalKey scaffoldKey, String message,
+  showError(BuildContext context, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: scaffoldKey.currentContext!,
+          context: context,
           message: message,
           icon: icon ?? Icons.dangerous_outlined,
           backgroundColor: AppColors.dangerColor,
           actions: actions);
 
-  showWarning(GlobalKey scaffoldKey, String message,
+  showWarning(BuildContext context, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: scaffoldKey.currentContext!,
+          context: context,
           message: message,
           icon: icon ?? Icons.warning_amber_rounded,
           backgroundColor: AppColors.warningColor,
           actions: actions);
 
-  showInfo(GlobalKey scaffoldKey, String message,
+  showInfo(BuildContext context, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: scaffoldKey.currentContext!,
+          context: context,
           message: message,
           icon: icon ?? Icons.info_outlined,
           backgroundColor: AppColors.infoColor,
           actions: actions);
 
-  showSuccess(GlobalKey scaffoldKey, String message,
+  showSuccess(BuildContext context, String message,
           {IconData? icon, List<Widget>? actions}) =>
       _show(
-          context: scaffoldKey.currentContext!,
+          context: context,
           message: message,
           icon: icon ?? Icons.task_alt_rounded,
           backgroundColor: AppColors.successColor,

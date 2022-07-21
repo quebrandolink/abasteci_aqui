@@ -63,9 +63,16 @@ class _BuildMapWidgetState extends State<BuildMapWidget> {
           ),
         ),
         widget.model.latitude == 0
-            ? const SplashWidgetLottie(
-                isNetwork: true,
-                lottieFile: Constants.kfuelLottieAnimation,
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  SizedBox(height: 150),
+                  SplashWidgetLottie(
+                    isNetwork: true,
+                    lottieFile: Constants.kfuelLottieAnimation,
+                    size: 100,
+                  ),
+                ],
               )
             : widget.newFuel
                 ? NewFuel(model: widget.model)

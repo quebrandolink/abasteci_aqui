@@ -21,6 +21,7 @@ class SplashWidgetLottie extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox.square(
             dimension: size,
