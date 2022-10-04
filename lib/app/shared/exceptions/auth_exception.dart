@@ -2,6 +2,10 @@ import 'failure_exception.dart';
 
 class NoDataFound extends Failure {}
 
+class UserDataEmpty extends Failure {
+  UserDataEmpty() : super(errorMessage: "Preencha os dados corretamente.");
+}
+
 class NoUserFound extends Failure {
   NoUserFound()
       : super(errorMessage: "Os dados de usuário não foram localizados.");

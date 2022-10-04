@@ -4,7 +4,8 @@ import '../../../../shared/exceptions/failure_exception.dart';
 import '../entities/user_entity.dart';
 
 abstract class AuthUsecase {
-  Future<Either<Failure, UserEntity>> signIn();
+  Future<Either<Failure, UserEntity>> signIn(String email, String password);
+  Future<Either<Failure, UserEntity>> signInGoogle();
   Future<void> signOut();
   Stream<UserEntity?> checkSignedUser();
   UserEntity? get user;
@@ -16,8 +17,17 @@ class AuthUsecaseImpl implements AuthUsecase {
   AuthUsecaseImpl(this._repository);
 
   @override
-  Future<Either<Failure, UserEntity>> signIn() async {
-    return await _repository.signIn();
+  UserEntity? get user => _repository.user;
+
+  @override
+  Future<Either<Failure, UserEntity>> signIn(
+      String email, String password) async {
+    return await _repository.signIn(email, password);
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> signInGoogle() async {
+    return await _repository.signInGoogle();
   }
 
   @override
@@ -29,7 +39,4 @@ class AuthUsecaseImpl implements AuthUsecase {
   Stream<UserEntity?> checkSignedUser() {
     return _repository.checkSignedUser();
   }
-
-  @override
-  UserEntity? get user => _repository.user;
 }

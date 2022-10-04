@@ -2,36 +2,37 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:ionicons/ionicons.dart';
 
+import '../../../../shared/exceptions/fuel_exception.dart';
 import '../../../../shared/helpers/theme/values/values.dart';
 import '../../domain/entities/fuel_entity.dart';
 import '../stores/fuel_store.dart';
+import '../stores/home_store.dart';
 
-class NewFuel extends StatelessWidget {
-  const NewFuel({Key? key, required this.model}) : super(key: key);
+class NewFuel extends StatefulWidget {
   final FuelEntity model;
+
+  const NewFuel({Key? key, required this.model}) : super(key: key);
+
+  @override
+  State<NewFuel> createState() => _NewFuelState();
+}
+
+class _NewFuelState extends State<NewFuel> {
+  final store = Modular.get<FuelStore>();
 
   @override
   Widget build(BuildContext context) {
-    final store = Modular.get<FuelStore>();
-
     return Padding(
       padding: const EdgeInsets.all(Sizes.DIVISIONS),
       child: ListView(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        // mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: Sizes.DIVISIONS),
-          TextFieldWidget(
-              controller: store.vehicleController,
-              icon: Ionicons.car_outline,
-              hintText: "Insira a placa do veículo",
-              inputType: TextInputType.streetAddress,
-              formatters: [
-                PlacaVeiculoInputFormatter(),
-              ]),
+          const TextFieldVehicleWidget(),
           const SizedBox(height: Sizes.DIVISIONS),
           TextFieldWidget(
               controller: store.kmController,
@@ -68,7 +69,7 @@ class NewFuel extends StatelessWidget {
             height: 60,
             child: ElevatedButton.icon(
               onPressed: () {
-                store.insert(model, context);
+                store.insert(widget.model, context);
               },
               icon: const Icon(Ionicons.save_outline),
               label: const Text("SALVAR"),
@@ -81,6 +82,84 @@ class NewFuel extends StatelessWidget {
   }
 }
 
+class TextFieldVehicleWidget extends StatelessWidget {
+  const TextFieldVehicleWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final store = Modular.get<FuelStore>();
+
+    return ScopedBuilder<HomeStore, FuelException, List<FuelEntity>>(
+      store: Modular.get<HomeStore>(),
+      onLoading: (context) => const Center(
+        child:
+            SizedBox(height: 30, width: 30, child: CircularProgressIndicator()),
+      ),
+      onError: (context, error) => TextFieldWidget(
+        controller: store.vehicleController,
+        icon: Ionicons.car_outline,
+        hintText: "Insira a placa do veículo",
+        inputType: TextInputType.streetAddress,
+        formatters: [
+          PlacaVeiculoInputFormatter(),
+        ],
+      ),
+      onState: (context, listVehicles) {
+        List<String> vehiclesList =
+            listVehicles.map((e) => e.vehicle!).toSet().toList();
+
+        return Autocomplete(
+          onSelected: store.setVehicle,
+          optionsBuilder: (TextEditingValue textEditingValue) {
+            if (textEditingValue.text.isEmpty) {
+              return vehiclesList;
+            }
+            return vehiclesList.where((vehicle) => vehicle
+                .toUpperCase()
+                .contains(textEditingValue.text.toUpperCase()));
+          },
+          optionsViewBuilder: (context, Function(String) onSelected, options) {
+            return Material(
+              elevation: 4,
+              child: ListView.separated(
+                  padding: EdgeInsets.zero,
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemCount: options.length,
+                  itemBuilder: (context, index) {
+                    final option = options.elementAt(index);
+
+                    return ListTile(
+                      title: Text(option.toString()),
+                      onTap: () => onSelected(option.toString()),
+                    );
+                  }),
+            );
+          },
+          initialValue: store.vehicleController.value,
+          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+            store.vehicleController = controller;
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              onEditingComplete: onFieldSubmitted,
+              inputFormatters: [
+                PlacaVeiculoInputFormatter(),
+              ],
+              keyboardType: TextInputType.streetAddress,
+              decoration: const InputDecoration(
+                hintText: "Insira a placa do veículo",
+                prefixIcon: Icon(
+                  Ionicons.car_outline,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
 class TextFieldWidget extends StatelessWidget {
   const TextFieldWidget({
     Key? key,
@@ -89,6 +168,7 @@ class TextFieldWidget extends StatelessWidget {
     this.formatters,
     this.hintText,
     this.icon,
+    this.focusNode,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -96,29 +176,19 @@ class TextFieldWidget extends StatelessWidget {
   final TextInputType inputType;
   final String? hintText;
   final IconData? icon;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      focusNode: focusNode,
       inputFormatters: formatters,
       keyboardType: inputType,
       decoration: InputDecoration(
-          hintText: hintText,
-          filled: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          prefixIcon: icon != null ? Icon(icon) : null,
-          enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Theme.of(context).primaryColor),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          border: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 2, color: Theme.of(context).primaryColor),
-            borderRadius: BorderRadius.circular(10.0),
-          )),
+        hintText: hintText,
+        prefixIcon: icon != null ? Icon(icon) : null,
+      ),
     );
   }
 }

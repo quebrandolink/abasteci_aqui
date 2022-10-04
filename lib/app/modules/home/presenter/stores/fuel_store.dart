@@ -20,16 +20,44 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
   FuelStore(this.usecase) : super(FuelEntity(latitude: 0, longitude: 0));
   final FuelUsecase usecase;
   late GoogleMapController mapController;
-  TextEditingController kmController = TextEditingController();
-  TextEditingController vehicleController = TextEditingController();
-  TextEditingController literController = TextEditingController();
-  TextEditingController valueLiterController = TextEditingController();
+  late TextEditingController kmController;
+  late TextEditingController vehicleController;
+  late TextEditingController literController;
+  late TextEditingController valueLiterController;
   GlobalKey<ScaffoldState> scaffoldKeyFuelStore = GlobalKey<ScaffoldState>();
 
   FuelEntity _fuelEntity = FuelEntity(
     latitude: 0,
     longitude: 0,
   );
+
+  setVehicle(String vehicle) {
+    vehicleController.text = vehicle;
+  }
+
+  void dispose() {
+    mapController.dispose();
+    kmController.dispose();
+    vehicleController.dispose();
+    literController.dispose();
+    valueLiterController.dispose();
+  }
+
+  initState({String? lastVehicle, FuelEntity? entity}) {
+    kmController = TextEditingController();
+    vehicleController = TextEditingController();
+    literController = TextEditingController();
+    valueLiterController = TextEditingController();
+    getPosition(entity);
+    if (lastVehicle != null && lastVehicle != "null") {
+      vehicleController.text = lastVehicle;
+    } else {
+      vehicleController.clear();
+    }
+    kmController.clear();
+    literController.clear();
+    valueLiterController.clear();
+  }
 
   Future<void> insert(FuelEntity model, BuildContext context) async {
     if (kmController.text.trim().isEmpty) {
@@ -130,7 +158,7 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
           model.longitude = position.longitude;
         }
         if (model.address == null || model.address!.isEmpty) {
-          final address = await getAddress(model.latitude!, model.longitude!);
+          final address = await _getAddress(model.latitude!, model.longitude!);
           model.address = address;
         }
         latLng = LatLng(model.latitude!, model.longitude!);
@@ -138,7 +166,7 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
       } else {
         Position position = await _currentPosition();
         latLng = LatLng(position.latitude, position.longitude);
-        final address = await getAddress(latLng.latitude, latLng.longitude);
+        final address = await _getAddress(latLng.latitude, latLng.longitude);
         _fuelEntity = FuelEntity(
           address: address,
           latitude: latLng.latitude,
@@ -162,18 +190,45 @@ class FuelStore extends NotifierStore<FuelException, FuelEntity> {
     }
   }
 
-  Future<String> getAddress(double latitude, double longitude) async {
+/*
+  Future<String> _getAddress(double latitude, double longitude) async {
+    if (latitude == 0.0 || longitude == 0.0) {
+      return "";
+    }
+    GBLatLng position = GBLatLng(lat: latitude, lng: longitude);
+    GBData data = await GeocoderBuddy.findDetails(position).catchError((e, s) {
+      if (kDebugMode) {
+        print("error = $e");
+        print(s);
+        print("latitude:$latitude - longitude:$longitude");
+      }
+      throw AddressException("Erro ao buscar endereço novo.");
+    });
+
+    //TODO: olhar aqui depois;
+
+    Address address = data.address;
+
+    String result =
+        "${address.road}, ${address.village}-${address.stateDistrict}";
+
+    return result;
+  }
+
+*/
+  Future<String> _getAddress(double latitude, double longitude) async {
     if (latitude == 0.0 || longitude == 0.0) {
       return "";
     }
     String mapsApiKey = const String.fromEnvironment("ANDROID_MAPS_APIKEY");
     GeoData data = await Geocoder2.getDataFromCoordinates(
+            language: "pt-BR",
             latitude: latitude,
             longitude: longitude,
             googleMapApiKey: mapsApiKey)
         .catchError((e) => throw FuelException("Erro ao buscar endereço."));
-
-    return data.address;
+    List<String> address = data.address.split(",");
+    return "${address[0]},${address[1].replaceAll(" -", ",")},${address[2].replaceAll(" - ", "-")}";
   }
 
   Future<Position> _currentPosition() async {

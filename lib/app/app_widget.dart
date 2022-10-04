@@ -1,8 +1,8 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:fuel_manager/app/shared/helpers/theme/values/values.dart';
 import 'package:fuel_manager/app/shared/theme/theme_store.dart';
@@ -73,11 +73,99 @@ class _AppWidgetState extends State<AppWidget> {
               routerDelegate: Modular.routerDelegate,
               theme: ThemeData(
                 useMaterial3: true,
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    elevation: 0,
+                    backgroundColor: AppColors.primaryColor,
+                  ),
+                ),
+                inputDecorationTheme: InputDecorationTheme(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  prefixIconColor: Colors.grey[700],
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 2, color: AppColors.dangerColor),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1, color: AppColors.dangerColor),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1, color: AppColors.primaryColor),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.grey[400]!),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  labelStyle: TextStyle(color: Colors.grey[800]),
+                  counterStyle: TextStyle(color: Colors.grey[800]),
+                ),
                 colorScheme: lightColorScheme,
                 extensions: [lightCustomColors],
               ),
               darkTheme: ThemeData(
                 useMaterial3: true,
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primaryColor,
+                    elevation: 0,
+                  ),
+                ),
+                inputDecorationTheme: InputDecorationTheme(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  filled: true,
+                  fillColor: Colors.grey[800],
+                  prefixIconColor: Colors.grey[700],
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 2, color: AppColors.dangerColor),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1, color: AppColors.dangerColor),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1, color: AppColors.primaryColor),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.grey[900]!),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.grey[800]!),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.grey[800]!),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintStyle: TextStyle(color: Colors.grey[600]),
+                  labelStyle: TextStyle(color: Colors.grey[800]),
+                  counterStyle: TextStyle(color: Colors.grey[800]),
+                ),
                 colorScheme: darkColorScheme,
                 extensions: [darkCustomColors],
               ),

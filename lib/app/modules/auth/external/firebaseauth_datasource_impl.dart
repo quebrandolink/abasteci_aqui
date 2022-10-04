@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../domain/entities/user_entity.dart';
 import '../infra/datasources/auth_datasource.dart';
@@ -15,7 +16,17 @@ class FirebaseauthDatasourceImpl implements AuthDatasource {
   FirebaseauthDatasourceImpl(this._firebaseAuth, this._googleSignIn);
 
   @override
-  Future<UserEntity> signIn() async {
+  UserEntity? get user => (_firebaseAuth.currentUser == null)
+      ? null
+      : UserEntity(
+          uid: _firebaseAuth.currentUser!.uid,
+          name: _firebaseAuth.currentUser!.displayName,
+          photoUrl: _firebaseAuth.currentUser!.photoURL,
+          email: _firebaseAuth.currentUser!.email,
+        );
+
+  @override
+  Future<UserEntity> signInGoogle() async {
     try {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -62,8 +73,37 @@ class FirebaseauthDatasourceImpl implements AuthDatasource {
   }
 
   @override
+  Future<UserEntity> signIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await _firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      var user = userCredential.user;
+
+      if (user == null) {
+        throw NoUserFound();
+      }
+
+      return UserEntity(
+          uid: user.uid,
+          email: user.email,
+          photoUrl: user.photoURL,
+          name: user.displayName);
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print("ERRO AUTH_SERVICE FirebaseAuthException: ${e.code}");
+        print(FirebaseAuthErros(e.code).toString());
+      }
+      throw FirebaseAuthErros(e.code);
+    }
+  }
+
+  @override
   Future<void> signOut() async {
-    _googleSignIn.disconnect();
+    bool isSignedInGoogle = await _googleSignIn.isSignedIn();
+    if (isSignedInGoogle) {
+      _googleSignIn.disconnect();
+    }
     _firebaseAuth.signOut();
   }
 
@@ -78,14 +118,4 @@ class FirebaseauthDatasourceImpl implements AuthDatasource {
             email: user.email,
           ));
   }
-
-  @override
-  UserEntity? get user => (_firebaseAuth.currentUser == null)
-      ? null
-      : UserEntity(
-          uid: _firebaseAuth.currentUser!.uid,
-          name: _firebaseAuth.currentUser!.displayName,
-          photoUrl: _firebaseAuth.currentUser!.photoURL,
-          email: _firebaseAuth.currentUser!.email,
-        );
 }

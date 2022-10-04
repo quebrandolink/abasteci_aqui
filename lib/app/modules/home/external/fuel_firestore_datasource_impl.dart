@@ -57,7 +57,7 @@ class FuelFirestoreDatasourceImpl implements FuelDatasource {
     CollectionReference fuelCollection = firestore.collection('fuel');
     return await fuelCollection
         .add(FuelEntityAdapter.toJson(model))
-        .then((value) => true)
+        .then((value) => value.id.isNotEmpty ? true : false)
         .catchError((error) {
       if (kDebugMode) {
         print({"firebase_error", error});

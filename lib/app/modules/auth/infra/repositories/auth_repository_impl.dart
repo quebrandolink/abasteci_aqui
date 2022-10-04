@@ -11,9 +11,23 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._authDatasource);
 
   @override
-  Future<Either<Failure, UserEntity>> signIn() async {
+  UserEntity? get user => _authDatasource.user;
+
+  @override
+  Future<Either<Failure, UserEntity>> signIn(
+      String email, String password) async {
     try {
-      final result = await _authDatasource.signIn();
+      final result = await _authDatasource.signIn(email, password);
+      return Right(result);
+    } on Failure catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> signInGoogle() async {
+    try {
+      final result = await _authDatasource.signInGoogle();
       return Right(result);
     } on Failure catch (e) {
       return Left(e);
@@ -29,7 +43,4 @@ class AuthRepositoryImpl implements AuthRepository {
   Stream<UserEntity?> checkSignedUser() {
     return _authDatasource.checkSignedUser();
   }
-
-  @override
-  UserEntity? get user => _authDatasource.user;
 }

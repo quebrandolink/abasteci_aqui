@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:fuel_manager/app/shared/helpers/shimmer_container.dart';
@@ -110,7 +111,9 @@ class FuelListItem extends StatelessWidget {
           : () async {
               var result =
                   await Modular.to.pushNamed("addfuel", arguments: model);
-              print("result: $result");
+              if (kDebugMode) {
+                print("result: $result");
+              }
 
               if (result != null) {
                 store.getList();

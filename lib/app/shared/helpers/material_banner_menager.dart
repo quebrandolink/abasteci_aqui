@@ -17,7 +17,7 @@ class BannerMenager {
           ? actions
           : [
               TextButton(
-                style: TextButton.styleFrom(primary: Colors.white),
+                style: TextButton.styleFrom(foregroundColor: Colors.white),
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
                 },
